@@ -1,0 +1,33 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploys the coach workspace as a static site (no server needed for V1:
+# analysis data is bundled; the pipeline API will be a separate service later).
+services:
+  - type: web
+    name: shuttleai-workspace
+    runtime: static
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci --no-audit --no-fund && npm run build
+    staticPublishPath: ./dist
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      # SPA fallback so deep links / query-string states resolve to the app
+      - type: rewrite
+        source: /*
+        destination: /index.html
