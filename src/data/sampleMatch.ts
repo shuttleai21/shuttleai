@@ -81,7 +81,7 @@ function buildRallies(): Rally[] {
 export const sampleMatch: MatchAnalysis = {
   meta: {
     discipline: "Men's doubles",
-    context: 'Next-game · plan for Game 2',
+    context: 'Full match · prep for next match',
     scoreLine: 'G1 17–21',
     durationLabel: '22 min',
     videoDurationLabel: '22:04',
@@ -104,7 +104,7 @@ export const sampleMatch: MatchAnalysis = {
     headlineBefore: 'It was close until 9–11. Then they started aiming almost every attack at ',
     headlineTarget: 'vikram',
     headlineAfter: ', and it worked.',
-    subline: 'They won 10 of the last 18 points. Three changes can turn Game 2 around.',
+    subline: 'They won 10 of the last 18 points. Three changes to take into the next match.',
     goalsFootnote: 'Estimates from 34 rallies of one game. A guide, not a promise.',
     defaultGoal: 'g2',
     goals: [

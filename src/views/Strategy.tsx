@@ -72,7 +72,7 @@ export function StrategyView({ ws }: { ws: Workspace }) {
               <div style={{ padding: '14px 18px 16px', background: 'var(--bg-sunk)', borderTop: '1px solid var(--line-2)' }}>
                 <div className="row" style={{ gap: 10, marginBottom: 10 }}>
                   <span className="ev-tag ev-rec">→ RESPONSE OPTIONS</span>
-                  <span className="muted" style={{ fontSize: 12 }}>Pick what goes into the Game 2 plan</span>
+                  <span className="muted" style={{ fontSize: 12 }}>Pick what goes into the next-match plan</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 10 }}>
                   {t.responses.map((r, i) => {
@@ -151,7 +151,7 @@ export function StrategyView({ ws }: { ws: Workspace }) {
 
       {/* 02 Plan */}
       <section className="col" style={{ gap: 14 }}>
-        <SectionHead n="02" sub="Three priorities, in order. This is the courtside card in the PDF.">Plan for Game 2</SectionHead>
+        <SectionHead n="02" sub="Three priorities, in order. This is the courtside card in the PDF.">Plan for the next match</SectionHead>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 14 }}>
           {st.plan.map((p, i) => (
             <div key={i} className="col paper" style={{ borderRadius: 8, padding: '22px 22px 18px', gap: 14 }}>
@@ -168,7 +168,7 @@ export function StrategyView({ ws }: { ws: Workspace }) {
             </div>
           ))}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,2fr) minmax(0,1fr)', gap: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: 14 }}>
           <div className="row" style={{ border: '1px solid var(--watch-bd)', background: 'var(--watch-bg)', borderRadius: 8, padding: '16px 18px', gap: 16, alignItems: 'flex-start' }}>
             <span className="tag tag-watch" style={{ flex: 'none' }}>◌ EXPECT THEM TO ADJUST</span>
             <div className="col" style={{ gap: 6 }}>
@@ -177,10 +177,6 @@ export function StrategyView({ ws }: { ws: Workspace }) {
               </span>
               <span className="muted" style={{ fontSize: 12 }}><span className="mono">◐ INFERRED</span> · {st.expectAdjust.basis}</span>
             </div>
-          </div>
-          <div className="col" style={{ border: '1px solid var(--line-2)', borderRadius: 8, padding: '16px 18px', gap: 6 }}>
-            <span className="muted" style={{ font: '600 11px var(--mono)', letterSpacing: '.06em' }}>⇄ ENDS CHANGE</span>
-            <span className="pretty" style={{ color: 'var(--fg-2)' }}>{st.endsChange}</span>
           </div>
         </div>
       </section>

@@ -1,13 +1,14 @@
 import { ConfChip, PlayerName, Term, useMatch, withGlossary } from '../components/ui';
 import type { Workspace } from '../state';
 
-const STEP_LABELS = ['The story', 'What went wrong', 'Where we stand', 'Your plan'];
+const STEP_LABELS = ['The story', 'What went wrong', 'Their game', 'Your plan'];
 
 export function Guided({ ws }: { ws: Workspace }) {
   const m = useMatch();
   const { s, patch } = ws;
   const g = m.guided;
-  const goal = g.goals.find((x) => x.key === s.goal) ?? g.goals.find((x) => x.key === g.defaultGoal)!;
+  // V1: full-match analysis for the next match; goal picking returns in a later version.
+  const goal = g.goals.find((x) => x.key === g.defaultGoal)!;
   const next = () => patch({ step: Math.min(3, s.step + 1) });
   const back = () => patch({ step: Math.max(0, s.step - 1) });
 
@@ -15,7 +16,7 @@ export function Guided({ ws }: { ws: Workspace }) {
     <div className="col" style={{ maxWidth: 960, margin: '0 auto', padding: '28px 32px 72px', gap: 40 }}>
       <div className="row" style={{ gap: 8 }} role="tablist" aria-label="Steps">
         {STEP_LABELS.map((l, i) => {
-          const reachable = i === 0 || !!s.goal;
+          const reachable = true;
           return (
             <button
               key={l}
@@ -44,39 +45,7 @@ export function Guided({ ws }: { ws: Workspace }) {
             </h1>
             <p className="pretty" style={{ fontSize: 19, lineHeight: 1.5, color: 'var(--fg-3)', maxWidth: 720 }}>{g.subline}</p>
           </div>
-          <div className="col" style={{ gap: 14 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 600 }}>What do you want from Game 2?</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 12 }}>
-              {g.goals.map((x) => {
-                const on = x.key === s.goal;
-                return (
-                  <button
-                    key={x.key}
-                    onClick={() => patch({ goal: x.key, step: 1 })}
-                    className="col card-hover"
-                    style={{ gap: 14, padding: 20, borderRadius: 10, border: `1px solid ${on ? 'var(--fg)' : 'var(--line-2)'}`, background: on ? 'var(--bg-raised)' : 'var(--bg-card)' }}
-                  >
-                    <span className="col" style={{ gap: 4 }}>
-                      <span style={{ fontSize: 20, fontWeight: 600 }}>{x.title}</span>
-                      <span className="muted" style={{ fontSize: 13 }}>{x.sub}</span>
-                    </span>
-                    <span style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                      <span style={{ font: '600 44px/1 var(--mono)' }}>{x.withPlan}</span>
-                      <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>chance with the plan</span>
-                    </span>
-                    <span className="row muted" style={{ gap: 8, paddingTop: 12, borderTop: '1px solid var(--line-2)', fontSize: 12, width: '100%' }}>
-                      <span>{x.without} if nothing changes</span>
-                      <ConfChip conf={x.conf} style={{ marginLeft: 'auto', color: 'var(--fg)' }} />
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="row muted" style={{ gap: 16, fontSize: 12 }}>
-              <span>{g.goalsFootnote}</span>
-              <button className="link-btn push" onClick={() => patch({ goal: s.goal ?? g.defaultGoal, step: 3 })}>Just show me the plan</button>
-            </div>
-          </div>
+          <NavButtons onBack={() => patch({ mode: 'detailed', tab: 'strategy' })} backLabel="Full analysis" onNext={next} nextLabel="What went wrong →" />
         </section>
       )}
 
@@ -103,13 +72,13 @@ export function Guided({ ws }: { ws: Workspace }) {
               </button>
             ))}
           </div>
-          <NavButtons onBack={back} onNext={next} nextLabel="Where we stand now →" />
+          <NavButtons onBack={back} onNext={next} nextLabel="Their game →" />
         </section>
       )}
 
       {s.step === 2 && (
         <section className="col" style={{ gap: 24 }}>
-          <StepHead title="Where we stand now" sub={`Down one game to nil. ${goal.standLine}`} />
+          <StepHead title="Their game" sub="What they did to us, and where they're open." />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: 12 }}>
             <div className="col" style={{ gridColumn: '1 / -1', gap: 14, padding: 22, borderRadius: 10, border: '1px solid var(--crit-bd)', background: 'var(--crit-bg)' }}>
               <div className="row" style={{ gap: 10 }}>
@@ -144,14 +113,8 @@ export function Guided({ ws }: { ws: Workspace }) {
       {s.step === 3 && (
         <section className="col" style={{ gap: 24 }}>
           <div className="col" style={{ gap: 10 }}>
-            <span className="eyebrow">YOUR PLAN FOR GAME 2</span>
-            <h2 style={{ fontSize: 36, fontWeight: 600, letterSpacing: '-.01em' }}>To {goal.verb}</h2>
-            <div className="row" style={{ gap: 14, fontSize: 15, color: 'var(--fg-3)', flexWrap: 'wrap' }}>
-              <span><span style={{ font: '600 18px var(--mono)', color: 'var(--fg)' }}>{goal.withPlan}</span> chance with this plan</span>
-              <span className="faint">·</span>
-              <span>{goal.without} if nothing changes</span>
-              <button className="link-btn push" onClick={() => patch({ step: 0 })}>Change goal</button>
-            </div>
+            <span className="eyebrow">YOUR PLAN FOR THE NEXT MATCH</span>
+            <h2 style={{ fontSize: 36, fontWeight: 600, letterSpacing: '-.01em' }}>Take these into the next match</h2>
           </div>
           <div className="col" style={{ gap: 12 }}>
             {goal.moves.map((idx, i) => {
@@ -198,10 +161,10 @@ function StepHead({ title, sub }: { title: string; sub: string }) {
   );
 }
 
-function NavButtons({ onBack, onNext, nextLabel }: { onBack: () => void; onNext: () => void; nextLabel: string }) {
+function NavButtons({ onBack, onNext, nextLabel, backLabel = 'Back' }: { onBack: () => void; onNext: () => void; nextLabel: string; backLabel?: string }) {
   return (
     <div className="row" style={{ gap: 10 }}>
-      <button className="btn btn-lg" onClick={onBack} style={{ padding: '0 18px' }}>Back</button>
+      <button className="btn btn-lg" onClick={onBack} style={{ padding: '0 18px' }}>{backLabel}</button>
       <button className="btn btn-lg btn-primary" onClick={onNext}>{nextLabel}</button>
     </div>
   );
